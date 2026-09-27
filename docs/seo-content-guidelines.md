@@ -2,6 +2,10 @@
 
 Use this checklist whenever writing or updating NailMuse content.
 
+## Blog research source of truth
+
+Before drafting or updating a blog article, consult [`../content/blog-research/blog-briefs.md`](../content/blog-research/blog-briefs.md). It maps 30 UK-focused pages to distinct primary queries, research sources, original-image briefs and internal links. Follow the copyright and production rules in [`../content/blog-research/README.md`](../content/blog-research/README.md).
+
 ## Core keyword priorities
 
 1. **nail art designs** — primary site-wide topic.

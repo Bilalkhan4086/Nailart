@@ -74,6 +74,7 @@ export default function Home() {
           </a>
           <nav className="hidden items-center gap-8 text-sm text-muted-foreground sm:flex" aria-label="Main navigation">
             <a href="#designs" className="text-foreground">UK trends</a>
+            <a href="/blog" className="transition-colors hover:text-foreground">Blog guides</a>
             <a href="#editorial-method" className="transition-colors hover:text-foreground">Our method</a>
             <a href="#sources" className="transition-colors hover:text-foreground">Sources</a>
           </nav>
@@ -107,16 +108,16 @@ export default function Home() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ['Newest nail art designs', 'Start with recently sourced UK looks, from velvet cat-eye finishes to Italian red and chilli-chocolate colour.', 'Fresh this week'],
-            ['Beginners’ nail art designs', 'Try dots, a micro-French edge or one accent nail. These simple ideas need fewer tools and are easier to repeat.', 'Easy to recreate'],
-            ['Rainbow nail art designs', 'Use fine multicolour tips, controlled stripes or a tonal rainbow so bright colour still feels polished.', 'Colour inspiration'],
-            ['Easy nail art designs for toenails', 'Choose a glossy base, one big-toe accent or a crisp micro-French tip that stays readable at a smaller scale.', 'Pedicure ideas'],
-          ].map(([title, detail, label]) => (
+            ['Newest nail art designs', 'Start with recently sourced UK looks, from velvet cat-eye finishes to Italian red and chilli-chocolate colour.', 'Fresh this week', '/blog/new-nail-art-designs-uk'],
+            ['Beginners’ nail art designs', 'Try dots, a micro-French edge or one accent nail. These simple ideas need fewer tools and are easier to repeat.', 'Easy to recreate', '/blog/beginners-nail-art-designs'],
+            ['Rainbow nail art designs', 'Use fine multicolour tips, controlled stripes or a tonal rainbow so bright colour still feels polished.', 'Colour inspiration', '/blog/rainbow-nail-art-designs'],
+            ['Easy nail art designs for toenails', 'Choose a glossy base, one big-toe accent or a crisp micro-French tip that stays readable at a smaller scale.', 'Pedicure ideas', '/blog/easy-nail-art-designs-for-toenails'],
+          ].map(([title, detail, label, href]) => (
             <article key={title} className="rounded-2xl border border-border bg-card p-6">
               <p className="text-[11px] font-semibold uppercase tracking-[.14em] text-primary">{label}</p>
               <h3 className="mt-5 text-lg font-semibold">{title}</h3>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">{detail}</p>
-              <a href="#designs" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Browse nail ideas <ArrowRight className="size-4" /></a>
+              <a href={href} className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Read the guide <ArrowRight className="size-4" /></a>
             </article>
           ))}
         </div>

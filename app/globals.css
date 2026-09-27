@@ -12,7 +12,9 @@
   --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border); --color-input: var(--input); --color-ring: var(--ring);
-  --font-sans: var(--font-montserrat); --font-heading: var(--font-montserrat);
+  --font-sans: var(--font-montserrat), Montserrat, Arial, sans-serif;
+  --font-heading: var(--font-montserrat), Montserrat, Arial, sans-serif;
+  --font-mono: var(--font-montserrat), Montserrat, Arial, sans-serif;
   --radius-sm: calc(var(--radius) * .65); --radius-md: calc(var(--radius) * .85);
   --radius-lg: var(--radius); --radius-xl: calc(var(--radius) * 1.45); --radius-2xl: calc(var(--radius) * 1.9);
 }
@@ -40,7 +42,9 @@
 
 @layer base {
   * { @apply border-border outline-ring/50; }
-  html { @apply scroll-smooth font-sans; }
-  body { @apply bg-background text-foreground antialiased; }
+  html { @apply scroll-smooth; font-family: var(--font-montserrat), Montserrat, Arial, sans-serif; }
+  body { @apply bg-background text-foreground antialiased; font-family: inherit; }
+  button, input, textarea, select, option { font: inherit; }
+  code, pre, kbd, samp { font-family: var(--font-montserrat), Montserrat, Arial, sans-serif; }
   button, a { @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring; }
 }

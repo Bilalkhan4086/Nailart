@@ -5,6 +5,7 @@ import './globals.css';
 const montserrat = Montserrat({
   variable: '--font-montserrat',
   subsets: ['latin'],
+  style: ['normal', 'italic'],
   display: 'swap',
 });
 
@@ -49,5 +50,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en-GB"><body className={montserrat.variable}>{children}</body></html>;
+  return <html lang="en-GB" className={montserrat.variable}><body className="font-sans">{children}</body></html>;
 }
