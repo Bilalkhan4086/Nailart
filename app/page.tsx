@@ -5,6 +5,14 @@ import { lastUpdated, siteUrl, trends } from '@/lib/trends';
 
 const sources = [...new Map(trends.map((trend) => [trend.sourceName, trend])).values()];
 
+const faqs = [
+  ['What nail colours are trending in autumn 2026?', 'Current UK edits are favouring blackberry purple, midnight navy, warm chilli-chocolate brown, translucent spice and muted matcha green.'],
+  ['Which designs work best on short nails?', 'Micro-French tips, chiffon sheer colour, fine dots, one tiny gem and small-scale plaid give short nails detail without crowding the nail bed.'],
+  ['Which nail art designs are easiest for beginners?', 'Beginners can start with dots, micro-French tips, simple colour blocking and one accent nail. These designs use fewer tools and leave room for small imperfections.'],
+  ['What are easy nail art designs for toenails?', 'A glossy block colour, one contrasting big-toe accent, fine French tips and simple dots are easy toenail options that remain clear at a smaller scale.'],
+  ['How often is this trend guide updated?', 'The edit is reviewed weekly. Each card shows its source publication and date so the newest nail art designs are easy to distinguish from longer-running styles.'],
+] as const;
+
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -45,23 +53,11 @@ const structuredData = {
     {
       '@type': 'FAQPage',
       '@id': `${siteUrl}/#faq`,
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'What nail colours are trending in autumn 2026?',
-          acceptedAnswer: { '@type': 'Answer', text: 'Current UK edits are favouring blackberry purple, midnight navy, warm chilli-chocolate brown, translucent spice and muted matcha green.' },
-        },
-        {
-          '@type': 'Question',
-          name: 'Which designs work best on short nails?',
-          acceptedAnswer: { '@type': 'Answer', text: 'Micro-French tips, chiffon sheer colour, fine dots, one tiny gem and small-scale plaid give short nails detail without crowding the nail bed.' },
-        },
-        {
-          '@type': 'Question',
-          name: 'How often is this trend guide updated?',
-          acceptedAnswer: { '@type': 'Answer', text: 'The NailMuse UK trend edit is reviewed weekly and each design includes its source publication and date.' },
-        },
-      ],
+      mainEntity: faqs.map(([question, answer]) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: { '@type': 'Answer', text: answer },
+      })),
     },
   ],
 };
@@ -103,6 +99,29 @@ export default function Home() {
 
       <TrendGallery />
 
+      <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8" aria-labelledby="inspiration-heading">
+        <div className="mb-9 max-w-3xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[.18em] text-primary">More ways to find your look</p>
+          <h2 id="inspiration-heading" className="font-heading text-4xl font-semibold tracking-[-.045em]">Nail art designs for every mood and skill level</h2>
+          <p className="mt-4 leading-7 text-muted-foreground">Explore a new nail art design by colour, difficulty or placement. This edit connects the newest nail art designs and new designs of nail art with practical ideas you can wear on fingernails or toenails.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ['Newest nail art designs', 'Start with recently sourced UK looks, from velvet cat-eye finishes to Italian red and chilli-chocolate colour.', 'Fresh this week'],
+            ['Beginners’ nail art designs', 'Try dots, a micro-French edge or one accent nail. These simple ideas need fewer tools and are easier to repeat.', 'Easy to recreate'],
+            ['Rainbow nail art designs', 'Use fine multicolour tips, controlled stripes or a tonal rainbow so bright colour still feels polished.', 'Colour inspiration'],
+            ['Easy nail art designs for toenails', 'Choose a glossy base, one big-toe accent or a crisp micro-French tip that stays readable at a smaller scale.', 'Pedicure ideas'],
+          ].map(([title, detail, label]) => (
+            <article key={title} className="rounded-2xl border border-border bg-card p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[.14em] text-primary">{label}</p>
+              <h3 className="mt-5 text-lg font-semibold">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">{detail}</p>
+              <a href="#designs" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">Browse nail ideas <ArrowRight className="size-4" /></a>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="border-y border-border bg-card/65 px-5 py-20 sm:px-8" aria-labelledby="autumn-guide-heading">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.8fr_1.2fr]">
           <div>
@@ -135,11 +154,7 @@ export default function Home() {
         <div className="grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
           <div><p className="mb-3 text-xs font-semibold uppercase tracking-[.18em] text-primary">Quick answers</p><h2 id="faq-heading" className="font-heading text-3xl font-semibold tracking-tight">UK nail trend FAQs</h2></div>
           <div className="divide-y divide-border border-y border-border">
-            {[
-              ['What nail colours are trending in autumn 2026?', 'Current UK edits are favouring blackberry purple, midnight navy, warm chilli-chocolate brown, translucent spice and muted matcha green.'],
-              ['Which designs work best on short nails?', 'Micro-French tips, chiffon sheer colour, fine dots, one tiny gem and small-scale plaid give short nails detail without crowding the nail bed.'],
-              ['How often is this trend guide updated?', 'The edit is reviewed weekly. Each card shows its source publication and date so recent signals are easy to distinguish from longer-running styles.'],
-            ].map(([question, answer]) => <article key={question} className="py-6"><h3 className="font-semibold">{question}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{answer}</p></article>)}
+            {faqs.map(([question, answer]) => <article key={question} className="py-6"><h3 className="font-semibold">{question}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{answer}</p></article>)}
           </div>
         </div>
       </section>
