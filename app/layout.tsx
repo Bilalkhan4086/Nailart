@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
-import { Geist } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 import './globals.css';
 
-const geist = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
+const montserrat = Montserrat({
+  variable: '--font-montserrat',
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://nailart.bookmylook.co'),
@@ -32,5 +36,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en-GB"><body className={geist.variable}>{children}</body></html>;
+  return <html lang="en-GB"><body className={montserrat.variable}>{children}</body></html>;
 }

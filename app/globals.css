@@ -12,7 +12,7 @@
   --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border); --color-input: var(--input); --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans); --font-heading: var(--font-geist-sans);
+  --font-sans: var(--font-montserrat); --font-heading: var(--font-montserrat);
   --radius-sm: calc(var(--radius) * .65); --radius-md: calc(var(--radius) * .85);
   --radius-lg: var(--radius); --radius-xl: calc(var(--radius) * 1.45); --radius-2xl: calc(var(--radius) * 1.9);
 }

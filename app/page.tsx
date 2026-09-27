@@ -91,7 +91,7 @@ export default function Home() {
           <div>
             <p className="mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.2em] text-primary"><span className="size-1.5 rounded-full bg-primary" /> UK nail trends · Autumn 2026</p>
             <h1 className="max-w-4xl font-heading text-5xl font-semibold leading-[.95] tracking-[-.06em] sm:text-7xl lg:text-[5rem]">
-              Trending nail art designs,<span className="block font-serif font-normal italic text-primary">curated for the UK.</span>
+              Trending nail art designs,<span className="block font-heading font-normal italic text-primary">curated for the UK.</span>
             </h1>
           </div>
           <div className="max-w-md lg:pb-2">
