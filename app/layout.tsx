@@ -5,7 +5,7 @@ import './globals.css';
 const geist = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://nailmuse-discover.silly-owlet-6985.chatgpt.site'),
+  metadataBase: new URL('https://nailmuse-discover.sparrowteamsorg.chatgpt.site'),
   title: 'NailMuse — Nail Art, Beautifully Discovered',
   description: 'Discover, filter, and save the nail-art trends shaping your next manicure.',
   openGraph: {
