@@ -1,207 +1,155 @@
-'use client';
-
-import { useMemo, useState } from 'react';
-import { ArrowRight, Bookmark, Check, ExternalLink, Search, Sparkles, X } from 'lucide-react';
+import { ArrowRight, CalendarDays, Search, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+import { TrendGallery } from '@/components/trend-gallery';
+import { lastUpdated, siteUrl, trends } from '@/lib/trends';
 
-type Design = {
-  id: number; title: string; description: string; image: string; category: string;
-  shape: string; colors: string[]; signal: string; sourceName: string; sourceUrl: string;
+const sources = [...new Map(trends.map((trend) => [trend.sourceName, trend])).values()];
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organisation`,
+      name: 'NailMuse by BookMyLook',
+      url: siteUrl,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: siteUrl,
+      name: 'NailMuse',
+      inLanguage: 'en-GB',
+      publisher: { '@id': `${siteUrl}/#organisation` },
+    },
+    {
+      '@type': 'CollectionPage',
+      '@id': `${siteUrl}/#collection`,
+      url: siteUrl,
+      name: 'Trending Nail Art Designs UK 2026',
+      description: 'A regularly updated edit of nail art designs and manicure trends for UK salon clients.',
+      inLanguage: 'en-GB',
+      dateModified: lastUpdated,
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      mainEntity: {
+        '@type': 'ItemList',
+        numberOfItems: trends.length,
+        itemListElement: trends.map((trend, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: trend.title,
+          url: `${siteUrl}/trends/${trend.slug}`,
+        })),
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${siteUrl}/#faq`,
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What nail colours are trending in autumn 2026?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Current UK edits are favouring blackberry purple, midnight navy, warm chilli-chocolate brown, translucent spice and muted matcha green.' },
+        },
+        {
+          '@type': 'Question',
+          name: 'Which designs work best on short nails?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Micro-French tips, chiffon sheer colour, fine dots, one tiny gem and small-scale plaid give short nails detail without crowding the nail bed.' },
+        },
+        {
+          '@type': 'Question',
+          name: 'How often is this trend guide updated?',
+          acceptedAnswer: { '@type': 'Answer', text: 'The NailMuse UK trend edit is reviewed weekly and each design includes its source publication and date.' },
+        },
+      ],
+    },
+  ],
 };
 
-const designs: Design[] = [
-  {
-    id: 1, title: 'Watercolor wash',
-    description: 'Translucent color drifts across a sheer base for a soft, painterly manicure that still feels polished.',
-    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1000&q=85',
-    category: 'Artistic', shape: 'Almond', colors: ['Rose', 'Cream'], signal: 'Summer 2026',
-    sourceName: 'Allure', sourceUrl: 'https://www.allure.com/story/2026-summer-nail-art-trends',
-  },
-  {
-    id: 2, title: 'Champagne cat-eye',
-    description: 'A magnetic metallic glow over a barely-there neutral—the kind of dimensional detail that changes in every light.',
-    image: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?auto=format&fit=crop&w=1000&q=85',
-    category: 'Chrome', shape: 'Oval', colors: ['Champagne', 'Nude'], signal: 'Editor watch',
-    sourceName: 'Good Housekeeping', sourceUrl: 'https://www.goodhousekeeping.com/beauty/nails/a70244342/2026-nail-trends/',
-  },
-  {
-    id: 3, title: 'Micro French lines',
-    description: 'A clean sheer base edged with ultra-fine color. Precise, modern, and especially good on shorter nails.',
-    image: 'https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=1000&q=85',
-    category: 'French', shape: 'Short', colors: ['Milky', 'Berry'], signal: 'Quiet luxury',
-    sourceName: 'Woman & Home', sourceUrl: 'https://www.womanandhome.com/beauty/2026-nail-trends/',
-  },
-  {
-    id: 4, title: 'Juicy color play',
-    description: 'Glossy, mismatched brights bring a joyful graphic energy to a neat, wearable silhouette.',
-    image: 'https://images.unsplash.com/photo-1571290274554-6a2eaa771e5f?auto=format&fit=crop&w=1000&q=85',
-    category: 'Colorful', shape: 'Squoval', colors: ['Citrus', 'Cobalt'], signal: 'Search breakout',
-    sourceName: 'Pinterest Predicts', sourceUrl: 'https://business.pinterest.com/pdf/pinterest-predicts/2026-trend-report/',
-  },
-  {
-    id: 5, title: 'Molten metal accents',
-    description: 'Sculptural silver and gold details turn a minimal manicure into tiny, jewelry-inspired objects.',
-    image: 'https://images.unsplash.com/photo-1599206676335-193c82b13c9e?auto=format&fit=crop&w=1000&q=85',
-    category: 'Chrome', shape: 'Almond', colors: ['Silver', 'Black'], signal: 'Runway mood',
-    sourceName: 'Marie Claire', sourceUrl: 'https://www.marieclaire.com/beauty/nails/nail-trends-2026/',
-  },
-  {
-    id: 6, title: 'Sheer floral detail',
-    description: 'Fine botanical marks float over a milky base for a delicate design with plenty of negative space.',
-    image: 'https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?auto=format&fit=crop&w=1000&q=85',
-    category: 'Floral', shape: 'Oval', colors: ['Blush', 'Green'], signal: 'Salon favorite',
-    sourceName: 'Who What Wear', sourceUrl: 'https://www.whowhatwear.com/beauty/nails/bridal-nail-trends-2026',
-  },
-];
-
-const filters = ['All', 'Chrome', 'French', 'Artistic', 'Floral', 'Colorful'];
-
 export default function Home() {
-  const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState('All');
-  const [saved, setSaved] = useState<number[]>([]);
-  const [selected, setSelected] = useState<Design | null>(null);
-
-  const visible = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    return designs.filter((design) => {
-      const matchesFilter = filter === 'All' || design.category === filter;
-      const haystack = [design.title, design.description, design.category, design.shape, ...design.colors].join(' ').toLowerCase();
-      return matchesFilter && (!term || haystack.includes(term));
-    });
-  }, [filter, query]);
-
-  function toggleSaved(id: number) {
-    setSaved((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
-  }
-
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
       <header className="sticky top-0 z-40 border-b border-border/75 bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">
-          <a href="#top" className="flex items-center gap-3" aria-label="NailMuse home">
+          <a href="/" className="flex items-center gap-3" aria-label="NailMuse UK home">
             <span className="grid size-9 place-items-center rounded-full bg-primary text-primary-foreground"><Sparkles className="size-4" /></span>
-            <span className="font-heading text-xl font-semibold tracking-[-0.04em]">NailMuse</span>
+            <span><span className="block font-heading text-lg font-semibold leading-4 tracking-[-.04em]">NailMuse</span><span className="text-[9px] font-medium uppercase tracking-[.16em] text-muted-foreground">by BookMyLook</span></span>
           </a>
           <nav className="hidden items-center gap-8 text-sm text-muted-foreground sm:flex" aria-label="Main navigation">
-            <a href="#discover" className="text-foreground">Discover</a>
-            <a href="#how-it-works" className="transition-colors hover:text-foreground">How it works</a>
+            <a href="#designs" className="text-foreground">UK trends</a>
+            <a href="#editorial-method" className="transition-colors hover:text-foreground">Our method</a>
             <a href="#sources" className="transition-colors hover:text-foreground">Sources</a>
           </nav>
-          <div className="flex items-center gap-2">
-            <span className="hidden text-xs text-muted-foreground md:inline">{saved.length} saved</span>
-            <Button className="rounded-full px-4" size="lg" onClick={() => document.querySelector('#discover')?.scrollIntoView()}>Browse designs</Button>
-          </div>
+          <Button className="rounded-full px-4" size="lg" render={<a href="#designs" />}>Find a nail idea <Search /></Button>
         </div>
       </header>
 
-      <section id="top" className="relative mx-auto max-w-7xl px-5 pb-10 pt-14 sm:px-8 sm:pt-20">
+      <section className="relative mx-auto max-w-7xl px-5 pb-12 pt-14 sm:px-8 sm:pt-20">
         <div className="pointer-events-none absolute -right-40 top-0 size-[440px] rounded-full bg-[radial-gradient(circle,rgba(151,76,96,.14),transparent_68%)]" />
-        <div className="relative grid gap-10 lg:grid-cols-[1fr_360px] lg:items-end">
+        <div className="relative grid gap-10 lg:grid-cols-[1fr_380px] lg:items-end">
           <div>
-            <p className="mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary"><span className="size-1.5 rounded-full bg-primary" /> The weekly trend edit</p>
-            <h1 className="max-w-4xl font-heading text-5xl font-semibold leading-[0.95] tracking-[-0.06em] sm:text-7xl lg:text-[5.25rem]">
-              Your next manicure,<span className="block font-serif font-normal italic text-primary">beautifully discovered.</span>
+            <p className="mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.2em] text-primary"><span className="size-1.5 rounded-full bg-primary" /> UK nail trends · Autumn 2026</p>
+            <h1 className="max-w-4xl font-heading text-5xl font-semibold leading-[.95] tracking-[-.06em] sm:text-7xl lg:text-[5rem]">
+              Trending nail art designs,<span className="block font-serif font-normal italic text-primary">curated for the UK.</span>
             </h1>
           </div>
           <div className="max-w-md lg:pb-2">
-            <p className="text-base leading-7 text-muted-foreground">Fresh nail-art references gathered from beauty editors and trend reports, organized so you can find the look that feels like you.</p>
-            <div className="mt-6 flex items-center gap-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground"><span>6 fresh ideas</span><span className="h-px w-8 bg-border" /><span>5 sources</span></div>
+            <p className="text-base leading-7 text-muted-foreground">Find the nail colours, finishes and short-nail ideas UK beauty editors are watching now. Every trend includes an original summary, a salon-ready brief and a link to the reporting behind it.</p>
+            <div className="mt-6 flex flex-wrap items-center gap-4 text-xs font-medium uppercase tracking-[.14em] text-muted-foreground"><span>{trends.length} current ideas</span><span className="h-px w-8 bg-border" /><span>{sources.length} UK sources</span><span className="h-px w-8 bg-border" /><span>Updated weekly</span></div>
           </div>
         </div>
       </section>
 
-      <section id="discover" className="mx-auto max-w-7xl px-5 pb-20 sm:px-8">
-        <div className="sticky top-[72px] z-30 -mx-5 border-y border-border/80 bg-background/95 px-5 py-4 backdrop-blur-xl sm:-mx-8 sm:px-8 lg:static lg:mx-0 lg:rounded-2xl lg:border lg:bg-card/60 lg:px-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <label className="relative block w-full max-w-lg">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={query} onChange={(event) => setQuery(event.target.value)} className="h-11 rounded-full border-0 bg-secondary/75 pl-10 pr-10 shadow-none" placeholder="Search color, shape, or style..." aria-label="Search nail art" />
-              {query && <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-label="Clear search"><X className="size-4" /></button>}
-            </label>
-            <div className="flex gap-2 overflow-x-auto pb-1 lg:pb-0" aria-label="Design filters">
-              {filters.map((item) => (
-                <Button key={item} onClick={() => setFilter(item)} variant={filter === item ? 'default' : 'secondary'} className="rounded-full px-4" aria-pressed={filter === item}>{item}</Button>
-              ))}
-            </div>
-          </div>
-        </div>
+      <TrendGallery />
 
-        <div className="mb-7 mt-10 flex items-end justify-between">
-          <div><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Updated September 2026</p><h2 className="font-heading text-2xl font-semibold tracking-tight">Trending now</h2></div>
-          <p className="text-sm text-muted-foreground">{visible.length} {visible.length === 1 ? 'design' : 'designs'}</p>
-        </div>
-
-        {visible.length > 0 ? (
-          <div className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {visible.map((design, index) => (
-              <article key={design.id} className="group">
-                <div className={`relative overflow-hidden rounded-[1.75rem] bg-muted ${index % 3 === 1 ? 'aspect-[4/5] lg:mt-10' : 'aspect-[4/5]'}`}>
-                  <img src={design.image} alt={`${design.title} nail art reference`} className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]" />
-                  <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4">
-                    <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#542f3d] shadow-sm backdrop-blur">{design.signal}</span>
-                    <button onClick={() => toggleSaved(design.id)} aria-label={`${saved.includes(design.id) ? 'Remove' : 'Save'} ${design.title}`} className={`grid size-10 place-items-center rounded-full shadow-sm backdrop-blur transition hover:scale-105 ${saved.includes(design.id) ? 'bg-primary text-primary-foreground' : 'bg-white/90 text-[#542f3d]'}`}>
-                      {saved.includes(design.id) ? <Check className="size-4" /> : <Bookmark className="size-4" />}
-                    </button>
-                  </div>
-                  <button onClick={() => setSelected(design)} className="absolute inset-x-4 bottom-4 flex translate-y-3 items-center justify-between rounded-full bg-[#2d1f23]/90 px-5 py-3 text-left text-sm font-medium text-white opacity-0 backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
-                    See the details <ArrowRight className="size-4" />
-                  </button>
-                </div>
-                <div className="px-1 pt-5">
-                  <div className="mb-3 flex flex-wrap items-center gap-2 text-[11px] font-medium uppercase tracking-[0.11em] text-muted-foreground"><span>{design.category}</span><span className="size-1 rounded-full bg-border" /><span>{design.shape}</span></div>
-                  <h3 className="font-heading text-xl font-semibold tracking-tight">{design.title}</h3>
-                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">{design.description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="grid min-h-80 place-items-center rounded-[2rem] border border-dashed border-border bg-card/50 text-center">
-            <div><Sparkles className="mx-auto mb-4 size-6 text-primary" /><h3 className="text-lg font-semibold">No exact match—yet.</h3><p className="mt-2 text-sm text-muted-foreground">Try a different color, shape, or category.</p><Button variant="outline" className="mt-5 rounded-full" onClick={() => { setQuery(''); setFilter('All'); }}>Clear filters</Button></div>
-          </div>
-        )}
-      </section>
-
-      <section id="how-it-works" className="bg-[#35252a] px-5 py-20 text-[#fbf4ef] sm:px-8">
+      <section className="border-y border-border bg-card/65 px-5 py-20 sm:px-8" aria-labelledby="autumn-guide-heading">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.8fr_1.2fr]">
-          <div><p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#dcb0ba]">Built for fresh inspiration</p><h2 className="max-w-sm font-heading text-4xl font-semibold leading-tight tracking-[-0.045em]">A clean home for an ever-changing feed.</h2></div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[['01', 'Collect', 'Bring in public trend signals and properly attributed design references.'], ['02', 'Curate', 'Review, tag, and describe each look before it reaches the gallery.'], ['03', 'Discover', 'Search by finish, color, shape, or mood—and save what you love.']].map(([number, title, detail]) => (
-              <div key={number} className="border-t border-white/20 pt-5"><span className="text-xs text-[#dcb0ba]">{number}</span><h3 className="mt-8 text-lg font-semibold">{title}</h3><p className="mt-3 text-sm leading-6 text-white/60">{detail}</p></div>
-            ))}
+          <div>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[.2em] text-primary">The UK autumn edit</p>
+            <h2 id="autumn-guide-heading" className="max-w-md font-heading text-4xl font-semibold leading-tight tracking-[-.045em]">What nail designs are trending in the UK right now?</h2>
+          </div>
+          <div className="grid gap-8 text-sm leading-7 text-muted-foreground sm:grid-cols-2">
+            <div><h3 className="mb-2 text-base font-semibold text-foreground">Richer colour, lighter finishes</h3><p>Deep berry, midnight blue and chocolate brown are returning for cooler weather, but sheer spice washes and diffused magnetic shimmer keep them looking current rather than heavy.</p></div>
+            <div><h3 className="mb-2 text-base font-semibold text-foreground">Practical lengths are leading</h3><p>Short oval and squoval nails continue to gain ground. Micro-French tips, tiny gems and small-scale print make them feel considered without sacrificing everyday practicality.</p></div>
+            <div><h3 className="mb-2 text-base font-semibold text-foreground">Print has softened</h3><p>Fawn markings, fine plaid and controlled mix-and-match sets offer personality in a more wearable way. The best versions repeat a tight palette across the manicure.</p></div>
+            <div><h3 className="mb-2 text-base font-semibold text-foreground">Natural is still a statement</h3><p>Chiffon pink, milky matcha and carefully groomed bare-looking nails remain strong alternatives to detailed art, especially when a low-maintenance appointment is the priority.</p></div>
           </div>
         </div>
       </section>
 
-      <footer id="sources" className="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-12 sm:px-8 md:flex-row md:items-end md:justify-between">
-        <div><div className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /><span className="font-semibold">NailMuse</span></div><p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">Trend descriptions are editorial summaries. Original reporting is linked on every design; images are illustrative references.</p></div>
-        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">{[...new Map(designs.map((design) => [design.sourceName, design])).values()].map((design) => <a key={design.sourceName} href={design.sourceUrl} target="_blank" rel="noreferrer" className="transition hover:text-foreground">{design.sourceName}</a>)}</div>
-      </footer>
+      <section id="editorial-method" className="bg-[#35252a] px-5 py-20 text-[#fbf4ef] sm:px-8">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.8fr_1.2fr]">
+          <div><p className="mb-4 text-xs font-semibold uppercase tracking-[.2em] text-[#dcb0ba]">How NailMuse works</p><h2 className="max-w-sm font-heading text-4xl font-semibold leading-tight tracking-[-.045em]">Useful inspiration, with the source left intact.</h2></div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              ['01', 'Track', 'We monitor recent UK beauty reporting and professional nail coverage for repeated trend signals.'],
+              ['02', 'Edit', 'We write original summaries, remove duplicates and turn each idea into a practical salon brief.'],
+              ['03', 'Attribute', 'Publication, article date and original link stay visible so you can check the source yourself.'],
+            ].map(([number, title, detail]) => <div key={number} className="border-t border-white/20 pt-5"><span className="text-xs text-[#dcb0ba]">{number}</span><h3 className="mt-8 text-lg font-semibold">{title}</h3><p className="mt-3 text-sm leading-6 text-white/60">{detail}</p></div>)}
+          </div>
+        </div>
+      </section>
 
-      <Dialog open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(null)}>
-        {selected && (
-          <DialogContent className="max-h-[90vh] overflow-y-auto rounded-[1.75rem] p-0 sm:max-w-3xl">
-            <div className="grid md:grid-cols-[.9fr_1.1fr]">
-              <img src={selected.image} alt={`${selected.title} manicure`} className="h-64 w-full object-cover md:h-full md:min-h-[470px]" />
-              <div className="flex flex-col p-7 sm:p-9">
-                <DialogHeader>
-                  <div className="mb-2 flex flex-wrap gap-2"><span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium">{selected.category}</span><span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium">{selected.shape}</span></div>
-                  <DialogTitle className="text-3xl font-semibold tracking-[-0.04em]">{selected.title}</DialogTitle>
-                  <DialogDescription className="pt-2 text-base leading-7">{selected.description}</DialogDescription>
-                </DialogHeader>
-                <div className="mt-8"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Palette</p><div className="mt-3 flex flex-wrap gap-2">{selected.colors.map((color) => <span key={color} className="rounded-full border border-border px-3 py-1.5 text-xs">{color}</span>)}</div></div>
-                <div className="mt-auto flex flex-col gap-3 pt-10 sm:flex-row">
-                  <Button className="h-11 flex-1 rounded-full" onClick={() => toggleSaved(selected.id)}>{saved.includes(selected.id) ? <><Check /> Saved</> : <><Bookmark /> Save design</>}</Button>
-                  <Button variant="outline" className="h-11 flex-1 rounded-full" render={<a href={selected.sourceUrl} target="_blank" rel="noreferrer" />}>Source: {selected.sourceName} <ExternalLink /></Button>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        )}
-      </Dialog>
+      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8" aria-labelledby="faq-heading">
+        <div className="grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
+          <div><p className="mb-3 text-xs font-semibold uppercase tracking-[.18em] text-primary">Quick answers</p><h2 id="faq-heading" className="font-heading text-3xl font-semibold tracking-tight">UK nail trend FAQs</h2></div>
+          <div className="divide-y divide-border border-y border-border">
+            {[
+              ['What nail colours are trending in autumn 2026?', 'Current UK edits are favouring blackberry purple, midnight navy, warm chilli-chocolate brown, translucent spice and muted matcha green.'],
+              ['Which designs work best on short nails?', 'Micro-French tips, chiffon sheer colour, fine dots, one tiny gem and small-scale plaid give short nails detail without crowding the nail bed.'],
+              ['How often is this trend guide updated?', 'The edit is reviewed weekly. Each card shows its source publication and date so recent signals are easy to distinguish from longer-running styles.'],
+            ].map(([question, answer]) => <article key={question} className="py-6"><h3 className="font-semibold">{question}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{answer}</p></article>)}
+          </div>
+        </div>
+      </section>
+
+      <footer id="sources" className="border-t border-border px-5 py-12 sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div><div className="flex items-center gap-2"><Sparkles className="size-4 text-primary" /><span className="font-semibold">NailMuse by BookMyLook</span></div><p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">Independent trend summaries for inspiration, not copied articles. Generated manicure photography is illustrative. Always check product suitability with your nail technician.</p></div>
+          <div><p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.14em] text-muted-foreground"><CalendarDays className="size-3.5" /> Sources monitored</p><div className="flex max-w-xl flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">{sources.map((source) => <a key={source.sourceName} href={source.sourceUrl} target="_blank" rel="noreferrer" className="transition hover:text-foreground">{source.sourceName}</a>)}</div></div>
+        </div>
+      </footer>
     </main>
   );
 }
