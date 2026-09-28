@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   ],
   creator: 'NailMuse editorial team',
   publisher: 'NailMuse by BookMyLook',
+  verification: {
+    other: {
+      'msvalidate.01': '4EE7206450468CDD652A8552D02AAC23',
+    },
+  },
   keywords: [
     'nail art designs',
     'nail art design',
