@@ -27,11 +27,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url,
       title: trend.seoTitle,
       description: trend.metaDescription,
-      images: [],
+      images: [{ url: '/og.png', width: 1536, height: 911, alt: `${trend.title} manicure inspiration` }],
       publishedTime: '2026-09-27',
       modifiedTime: lastUpdated,
     },
-    twitter: { card: 'summary', title: trend.seoTitle, description: trend.metaDescription, images: [] },
+    twitter: { card: 'summary_large_image', title: trend.seoTitle, description: trend.metaDescription, images: ['/og.png'] },
   };
 }
 
@@ -55,6 +55,7 @@ export default async function TrendPage({ params }: PageProps) {
         '@type': 'Article',
         headline: trend.seoTitle,
         description: trend.metaDescription,
+        image: `${siteUrl}/og.png`,
         datePublished: '2026-09-27',
         dateModified: lastUpdated,
         inLanguage: 'en-GB',
