@@ -28,6 +28,10 @@ export const metadata: Metadata = {
       'msvalidate.01': '4EE7206450468CDD652A8552D02AAC23',
     },
   },
+  icons: {
+    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+    shortcut: '/favicon.svg',
+  },
   keywords: [
     'nail art designs',
     'nail art design',
