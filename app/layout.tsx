@@ -11,7 +11,7 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://nailart.bookmylook.co'),
-  applicationName: 'NailMuse',
+  applicationName: 'Nail Art Designs UK',
   title: {
     default: 'Nail Art Designs UK: 2026 Trends | NailMuse',
     template: '%s | NailMuse UK',
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_GB',
     url: 'https://nailart.bookmylook.co',
-    siteName: 'NailMuse by BookMyLook',
+    siteName: 'Nail Art Designs UK',
     title: 'Nail Art Designs UK: 2026 Trends | NailMuse',
     description:
       'Explore the nail colours, short designs and salon-ready manicure ideas trending across the UK, updated weekly.',
@@ -90,6 +90,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB" className={montserrat.variable}>
+      <head>
+        <script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="tIAkEuiz43pC6RJbvucfsg"
+          async
+        />
+      </head>
       <body className="font-sans">{children}</body>
     </html>
   );
